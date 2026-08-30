@@ -18,4 +18,10 @@ public class AdverseEventResponse {
     private String severity;
     private String status;
     private LocalDate reportedDate;
+    private String suspectedDrug;
+    private String reportingTier;
+    private String meddraCodeStub;
+    private String whoDrugCodeStub;
+    private String causalityStatus;
+    private LocalDate causalityAssessedDate;
 }

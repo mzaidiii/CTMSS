@@ -36,6 +36,24 @@ public class AdverseEvent {
     @Enumerated(EnumType.STRING)
     private AeStatus status = AeStatus.OPEN;
 
+    // --- Pharmacovigilance fields ---
+    private String suspectedDrug;
+
+    @Enumerated(EnumType.STRING)
+    private PvCentreTier reportingTier;
+
+    private String meddraCodeStub;
+
+    private String whoDrugCodeStub;
+
+    @Enumerated(EnumType.STRING)
+    private CausalityStatus causalityStatus = CausalityStatus.PENDING_REVIEW;
+
+    private LocalDate causalityAssessedDate;
+
+    // --- Audit ---
+    private String changedBy;
+
     @Column(updatable = false)
     private Instant createdAt;
 

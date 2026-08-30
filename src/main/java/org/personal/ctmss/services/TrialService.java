@@ -1,5 +1,6 @@
 package org.personal.ctmss.services;
 
+import org.personal.ctmss.dtos.TrialLifelineDTO;
 import org.personal.ctmss.dtos.TrialUpdateRequest;
 import org.personal.ctmss.entity.Status;
 import org.personal.ctmss.entity.Trial;
@@ -108,6 +109,22 @@ public class TrialService {
             existing.setSecondary_objective(request.getSecondary_objective());
         }
 
+        if (request.getIec_approval_date() != null) {
+            existing.setIec_approval_date(request.getIec_approval_date());
+        }
+
+        if (request.getCtri_registration_number() != null) {
+            existing.setCtri_registration_number(request.getCtri_registration_number());
+        }
+
+        if (request.getCtri_registration_date() != null) {
+            existing.setCtri_registration_date(request.getCtri_registration_date());
+        }
+
+        if (request.getRegulatoryStage() != null) {
+            existing.setRegulatoryStage(request.getRegulatoryStage());
+        }
+
         return trialRepository.save(existing);
     }
 
@@ -117,11 +134,21 @@ public class TrialService {
             throw new RuntimeException("Trail not found");
         }
 
-       trialRepository.deleteById(id);
+        trialRepository.deleteById(id);
     }
 
     public Page<Trial> findByStatus(Status status , Pageable pageable){
 
         return  trialRepository.findByStatus(status , pageable);
+    }
+
+    public TrialLifelineDTO getLifeline(UUID id) {
+        Trial trial = getTrailById(id);
+        return new TrialLifelineDTO(
+                trial.getRegulatoryStage(),
+                trial.getIec_approval_date(),
+                trial.getCtri_registration_number(),
+                trial.getCtri_registration_date()
+        );
     }
 }

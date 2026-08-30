@@ -60,6 +60,20 @@ public class Trial {
 
     private String secondary_objective;
 
+    // --- Regulatory lifeline fields ---
+    private LocalDate iec_approval_date;
+
+    private String ctri_registration_number;
+
+    private LocalDate ctri_registration_date;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private RegulatoryStage regulatoryStage = RegulatoryStage.DRAFT;
+
+    // --- Audit ---
+    private String changedBy;
+
     @CreationTimestamp
     @Column(nullable = false,updatable = false)
     private Instant created_at;

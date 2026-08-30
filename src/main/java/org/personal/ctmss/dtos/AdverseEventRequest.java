@@ -13,4 +13,10 @@ public class AdverseEventRequest {
     private String description;
     private String severity;
     private LocalDate reportedDate;
+
+    // --- Pharmacovigilance fields (causalityStatus deliberately excluded - set later, not at creation) ---
+    private String suspectedDrug;
+    private String reportingTier;
+    private String meddraCodeStub;
+    private String whoDrugCodeStub;
 }

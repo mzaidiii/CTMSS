@@ -2,6 +2,7 @@ package org.personal.ctmss.controllers;
 
 
 import jakarta.validation.Valid;
+import org.personal.ctmss.dtos.TrialLifelineDTO;
 import org.personal.ctmss.dtos.TrialUpdateRequest;
 import org.personal.ctmss.entity.Status;
 import org.personal.ctmss.entity.Trial;
@@ -35,13 +36,18 @@ public class TrialController {
         if (status == null){
             return trialService.getTrails(pageable);
         }
-       return trialService.findByStatus(status,pageable);
+        return trialService.findByStatus(status,pageable);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Trial> getTrialById(@PathVariable UUID id){
         Trial trial = trialService.getTrailById(id);
         return ResponseEntity.ok(trial);
+    }
+
+    @GetMapping("/{id}/lifeline")
+    public ResponseEntity<TrialLifelineDTO> getLifeline(@PathVariable UUID id){
+        return ResponseEntity.ok(trialService.getLifeline(id));
     }
 
     @PatchMapping("/{id}")

@@ -2,6 +2,7 @@ package org.personal.ctmss.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.personal.ctmss.entity.RegulatoryStage;
 import org.personal.ctmss.entity.Status;
 
 import java.time.LocalDate;
@@ -27,4 +28,10 @@ public class TrialUpdateRequest {
     private String description;
     private String primary_objective;
     private String secondary_objective;
+
+    // --- Regulatory lifeline fields ---
+    private LocalDate iec_approval_date;
+    private String ctri_registration_number;
+    private LocalDate ctri_registration_date;
+    private RegulatoryStage regulatoryStage;
 }

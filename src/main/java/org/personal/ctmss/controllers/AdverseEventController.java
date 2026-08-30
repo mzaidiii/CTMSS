@@ -2,6 +2,7 @@ package org.personal.ctmss.controllers;
 
 import org.personal.ctmss.dtos.AdverseEventRequest;
 import org.personal.ctmss.dtos.AdverseEventResponse;
+import org.personal.ctmss.entity.CausalityStatus;
 import org.personal.ctmss.services.AdverseEventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +33,10 @@ public class AdverseEventController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<AdverseEventResponse> updateStatus(@PathVariable UUID id, @RequestParam String status) {
         return ResponseEntity.ok(adverseEventService.updateStatus(id, status));
+    }
+
+    @PatchMapping("/{id}/causality-assessment")
+    public ResponseEntity<AdverseEventResponse> assessCausality(@PathVariable UUID id, @RequestParam String status) {
+        return ResponseEntity.ok(adverseEventService.assessCausality(id, CausalityStatus.valueOf(status)));
     }
 }
