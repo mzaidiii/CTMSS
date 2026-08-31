@@ -99,7 +99,7 @@ public class KpiService {
     }
 
     public List<PatientAlertDTO> getAttentionAlerts(UUID trialId) {
-        List<AdverseEvent> openAEs = adverseEventRepository.findByPatient_TrialIdAndStatus(trialId , AeStatus.OPEN);
+        List<AdverseEvent> openAEs = adverseEventRepository.findByPatient_Trial_IdAndStatus(trialId , AeStatus.OPEN);
 
         List<PatientAlertDTO> alerts = new ArrayList<>();
 

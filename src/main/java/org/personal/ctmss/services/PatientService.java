@@ -22,6 +22,13 @@ public class PatientService {
     TrialSiteRepository trialSiteRepository;
 
     public Patient createPatient(Patient patient) {
+        if (patient.getSite() == null || patient.getSite().getId() == null) {
+            throw new IllegalArgumentException("Patient must be associated with a valid site ID");
+        }
+        if (patient.getTrial() == null || patient.getTrial().getId() == null) {
+            throw new IllegalArgumentException("Patient must be associated with a valid trial ID");
+        }
+
         UUID siteId = patient.getSite().getId();
         TrialSite site = trialSiteRepository.findById(siteId)
                 .orElseThrow(() -> new ResourceNotFoundException("No Site Found with id :- " + siteId));
@@ -52,10 +59,18 @@ public class PatientService {
 
     public Patient updatePatient(UUID id, Patient updated) {
         Patient existing = getPatientById(id);
-        existing.setStatus(updated.getStatus());
-        existing.setConsentStatus(updated.getConsentStatus());
-        existing.setConsentDate(updated.getConsentDate());
-        existing.setWithdrawalReason(updated.getWithdrawalReason());
+        if (updated.getStatus() != null) {
+            existing.setStatus(updated.getStatus());
+        }
+        if (updated.getConsentStatus() != null) {
+            existing.setConsentStatus(updated.getConsentStatus());
+        }
+        if (updated.getConsentDate() != null) {
+            existing.setConsentDate(updated.getConsentDate());
+        }
+        if (updated.getWithdrawalReason() != null) {
+            existing.setWithdrawalReason(updated.getWithdrawalReason());
+        }
         return patientRepository.save(existing);
     }
 

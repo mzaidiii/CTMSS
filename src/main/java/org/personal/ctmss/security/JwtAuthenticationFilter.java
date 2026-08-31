@@ -42,7 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         && !jwtVerificationService.isTokenExpired(token)) {
 
                     List<String> roles = jwtVerificationService.extractRoles(token);
-                    List<GrantedAuthority> authorities = roles.stream()
+                    List<GrantedAuthority> authorities = (roles == null) ? List.of() : roles.stream()
+                            .filter(role -> role != null && !role.isBlank())
+                            .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                             .map(SimpleGrantedAuthority::new)
                             .map(GrantedAuthority.class::cast)
                             .toList();

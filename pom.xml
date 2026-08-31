@@ -28,7 +28,7 @@
     </scm>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>21</java.version>
         <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
@@ -136,6 +136,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
         </dependency>
     </dependencies>
 

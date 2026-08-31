@@ -43,8 +43,9 @@ public class TrialSiteController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTrialSiteById(@PathVariable UUID id ){
+    public ResponseEntity<Void> deleteTrialSiteById(@PathVariable UUID id ){
         trialSiteService.deleteTrialSiteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

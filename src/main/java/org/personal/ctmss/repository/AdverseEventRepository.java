@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface AdverseEventRepository extends JpaRepository<AdverseEvent, UUID> {
     List<AdverseEvent> findByPatient_Id(UUID patientId);
 
-    List<AdverseEvent> findByPatient_TrialIdAndStatus(UUID trialId, AeStatus status);
+    List<AdverseEvent> findByPatient_Trial_IdAndStatus(UUID trialId, AeStatus status);
 }

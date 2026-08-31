@@ -36,11 +36,20 @@ public class VisitService {
 
     public Visit updateVisit(UUID id, Visit updated) {
         Visit existing = getVisitById(id);
-        existing.setStatus(updated.getStatus());
-        existing.setActualDate(updated.getActualDate());
-        existing.setNotes(updated.getNotes());
+        if (updated.getStatus() != null) {
+            existing.setStatus(updated.getStatus());
+        }
+        if (updated.getActualDate() != null) {
+            existing.setActualDate(updated.getActualDate());
+        }
+        if (updated.getNotes() != null) {
+            existing.setNotes(updated.getNotes());
+        }
+        if (updated.getProtocolDeviation() != null) {
+            existing.setProtocolDeviation(updated.getProtocolDeviation());
+        }
 
-        if (existing.getActualDate() != null && existing.getStatus() == VisitStatus.COMPLETED) {
+        if (existing.getScheduledDate() != null && existing.getActualDate() != null && existing.getStatus() == VisitStatus.COMPLETED) {
             long diff = Math.abs(ChronoUnit.DAYS.between(existing.getScheduledDate(), existing.getActualDate()));
             existing.setProtocolDeviation(diff > ALLOWED_WINDOW_DAYS);
         }

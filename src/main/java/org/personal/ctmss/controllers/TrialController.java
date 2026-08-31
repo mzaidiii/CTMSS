@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/trails")
+@RequestMapping({"/api/trails", "/api/trials"})
 public class TrialController {
 
     @Autowired
