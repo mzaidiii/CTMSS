@@ -1,5 +1,7 @@
 package org.personal.ctmss.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.personal.ctmss.dtos.TrialLifelineDTO;
 import org.personal.ctmss.dtos.TrialUpdateRequest;
 import org.personal.ctmss.entity.Status;
@@ -20,8 +22,17 @@ public class TrialService {
     @Autowired
     private TrialRepository trialRepository;
 
-    public List<Trial> createTrail(List<Trial> trial){
-        return trialRepository.saveAll(trial);
+    @Autowired
+    private AuditService auditService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    public List<Trial> createTrail(List<Trial> trials){
+        List<Trial> saved = trialRepository.saveAll(trials);
+        for (Trial t : saved) {
+            auditService.log("Trial", t.getId(), "CREATE", null, t);
+        }
+        return saved;
     }
 
     public Page<Trial> getTrails(Pageable pageable){
@@ -36,6 +47,8 @@ public class TrialService {
 
         Trial existing = trialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Trial not found with id " + id));
+
+        Trial before = deepCopy(existing);
 
         if (request.getProtocol_no() != null) {
             existing.setProtocol_no(request.getProtocol_no());
@@ -125,15 +138,17 @@ public class TrialService {
             existing.setRegulatoryStage(request.getRegulatoryStage());
         }
 
-        return trialRepository.save(existing);
+        Trial updated = trialRepository.save(existing);
+        auditService.log("Trial", updated.getId(), "UPDATE", before, updated);
+        return updated;
     }
 
     public void deleteTrail(UUID id) {
 
-        if (!trialRepository.existsById(id)) {
-            throw new RuntimeException("Trail not found");
-        }
+        Trial existing = trialRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Trail not found"));
 
+        auditService.log("Trial", id, "DELETE", existing, null);
         trialRepository.deleteById(id);
     }
 
@@ -150,5 +165,13 @@ public class TrialService {
                 trial.getCtri_registration_number(),
                 trial.getCtri_registration_date()
         );
+    }
+
+    private Trial deepCopy(Trial trial) {
+        try {
+            return objectMapper.readValue(objectMapper.writeValueAsString(trial), Trial.class);
+        } catch (Exception e) {
+            return null; // fallback — audit log will just show null "before" if copy fails
+        }
     }
 }

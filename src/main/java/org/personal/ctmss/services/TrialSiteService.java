@@ -18,8 +18,15 @@ public class TrialSiteService {
     @Autowired
     TrialSiteRepository trialSiteRepository;
 
+    @Autowired
+    AuditService auditService;
+
     public List<TrialSite> createTrialSite(List<TrialSite> trialsite){
-        return trialSiteRepository.saveAll(trialsite);
+        List<TrialSite> saved = trialSiteRepository.saveAll(trialsite);
+        for (TrialSite site : saved) {
+            auditService.log("TrialSite", site.getId(), "CREATE", null, site);
+        }
+        return saved;
     }
 
     public Page<TrialSite> getallTrialSite(Pageable pageable){
@@ -31,6 +38,8 @@ public class TrialSiteService {
     }
 
     public void deleteTrialSiteById(UUID id ){
+        TrialSite existing = getTrialSiteById(id);
+        auditService.log("TrialSite", id, "DELETE", existing, null);
         trialSiteRepository.deleteById(id);
     }
 

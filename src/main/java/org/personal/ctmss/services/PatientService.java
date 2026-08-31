@@ -1,5 +1,7 @@
 package org.personal.ctmss.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.personal.ctmss.entity.Patient;
 import org.personal.ctmss.entity.TrialSite;
 import org.personal.ctmss.exceptions.ResourceNotFoundException;
@@ -21,6 +23,11 @@ public class PatientService {
     @Autowired
     TrialSiteRepository trialSiteRepository;
 
+    @Autowired
+    AuditService auditService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     public Patient createPatient(Patient patient) {
         if (patient.getSite() == null || patient.getSite().getId() == null) {
             throw new IllegalArgumentException("Patient must be associated with a valid site ID");
@@ -37,7 +44,9 @@ public class PatientService {
             throw new IllegalArgumentException("Site does not belong to the specified trial");
         }
 
-        return patientRepository.save(patient);
+        Patient saved = patientRepository.save(patient);
+        auditService.log("Patient", saved.getId(), "CREATE", null, saved);
+        return saved;
     }
 
     public Page<Patient> getAllPatients(Pageable pageable) {
@@ -59,6 +68,8 @@ public class PatientService {
 
     public Patient updatePatient(UUID id, Patient updated) {
         Patient existing = getPatientById(id);
+        Patient before = deepCopy(existing);
+
         if (updated.getStatus() != null) {
             existing.setStatus(updated.getStatus());
         }
@@ -71,10 +82,23 @@ public class PatientService {
         if (updated.getWithdrawalReason() != null) {
             existing.setWithdrawalReason(updated.getWithdrawalReason());
         }
-        return patientRepository.save(existing);
+
+        Patient saved = patientRepository.save(existing);
+        auditService.log("Patient", saved.getId(), "UPDATE", before, saved);
+        return saved;
     }
 
     public void deletePatientById(UUID id) {
+        Patient existing = getPatientById(id);
+        auditService.log("Patient", id, "DELETE", existing, null);
         patientRepository.deleteById(id);
+    }
+
+    private Patient deepCopy(Patient patient) {
+        try {
+            return objectMapper.readValue(objectMapper.writeValueAsString(patient), Patient.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

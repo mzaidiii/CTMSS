@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/adverse-events/*/status").hasAnyRole("ADMIN", "PV")
                         .requestMatchers("/api/kpis/**").authenticated()
                         .requestMatchers("/fhir/**").authenticated()
+                        .requestMatchers("/api/audit-logs/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

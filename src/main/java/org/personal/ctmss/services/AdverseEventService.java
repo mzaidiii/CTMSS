@@ -1,5 +1,7 @@
 package org.personal.ctmss.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.personal.ctmss.dtos.AdverseEventRequest;
 import org.personal.ctmss.dtos.AdverseEventResponse;
 import org.personal.ctmss.entity.AdverseEvent;
@@ -23,11 +25,16 @@ public class AdverseEventService {
 
     private final AdverseEventRepository adverseEventRepository;
     private final PatientRepository patientRepository;
+    private final AuditService auditService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public AdverseEventService(AdverseEventRepository adverseEventRepository,
-                               PatientRepository patientRepository) {
+                               PatientRepository patientRepository,
+                               AuditService auditService) {
         this.adverseEventRepository = adverseEventRepository;
         this.patientRepository = patientRepository;
+        this.auditService = auditService;
     }
 
     public AdverseEventResponse createAdverseEvent(AdverseEventRequest request) {
@@ -47,6 +54,7 @@ public class AdverseEventService {
         ae.setWhoDrugCodeStub(request.getWhoDrugCodeStub());
 
         AdverseEvent saved = adverseEventRepository.save(ae);
+        auditService.log("AdverseEvent", saved.getId(), "CREATE", null, saved);
         return toResponse(saved);
     }
 
@@ -61,8 +69,10 @@ public class AdverseEventService {
         AdverseEvent ae = adverseEventRepository.findById(aeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Adverse event not found: " + aeId));
 
+        AdverseEvent before = deepCopy(ae);
         ae.setStatus(AeStatus.valueOf(newStatus));
         AdverseEvent saved = adverseEventRepository.save(ae);
+        auditService.log("AdverseEvent", saved.getId(), "UPDATE", before, saved);
         return toResponse(saved);
     }
 
@@ -70,9 +80,11 @@ public class AdverseEventService {
         AdverseEvent ae = adverseEventRepository.findById(aeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Adverse event not found: " + aeId));
 
+        AdverseEvent before = deepCopy(ae);
         ae.setCausalityStatus(status);
         ae.setCausalityAssessedDate(LocalDate.now());
         AdverseEvent saved = adverseEventRepository.save(ae);
+        auditService.log("AdverseEvent", saved.getId(), "UPDATE", before, saved);
         return toResponse(saved);
     }
 
@@ -92,5 +104,13 @@ public class AdverseEventService {
                 ae.getCausalityStatus() != null ? ae.getCausalityStatus().name() : null,
                 ae.getCausalityAssessedDate()
         );
+    }
+
+    private AdverseEvent deepCopy(AdverseEvent ae) {
+        try {
+            return objectMapper.readValue(objectMapper.writeValueAsString(ae), AdverseEvent.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
