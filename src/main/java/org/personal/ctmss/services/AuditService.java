@@ -1,6 +1,7 @@
 package org.personal.ctmss.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.personal.ctmss.entity.AuditLog;
 import org.personal.ctmss.repository.AuditLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class AuditService {
     @Autowired
     private AuditLogRepository auditLogRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public void log(String entityName, UUID entityId, String action, Object oldValue, Object newValue) {
         AuditLog log = new AuditLog();
