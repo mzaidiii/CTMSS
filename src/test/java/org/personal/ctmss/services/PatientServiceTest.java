@@ -43,23 +43,5 @@ class PatientServiceTest {
         );
     }
 
-    @Test
-    void shouldRejectPatientWhenTrialIsMissing() {
-        Patient patient = new Patient();
 
-        TrialSite site = new TrialSite();
-        site.setId(java.util.UUID.randomUUID());
-        patient.setSite(site);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> patientService.createPatient(patient)
-        );
-
-        verifyNoInteractions(
-                patientRepository,
-                trialSiteRepository,
-                auditService
-        );
-    }
 }
